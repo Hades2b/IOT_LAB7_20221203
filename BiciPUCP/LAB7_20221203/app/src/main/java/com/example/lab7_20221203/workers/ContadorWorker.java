@@ -19,7 +19,7 @@ public class ContadorWorker extends Worker {
     @Override
     public Result doWork() {
         long inicio = getInputData().getLong(KEY_INICIO, System.currentTimeMillis());
-        long fin = inicio + 120_000; // 120 segundos de duración
+        long fin = inicio + 120_000;
 
         while (true) {
             long ahora = System.currentTimeMillis();
@@ -27,7 +27,6 @@ public class ContadorWorker extends Worker {
 
             if (restantes < 0) restantes = 0;
 
-            // Enviar progreso al ViewModel
             Data progress = new Data.Builder()
                     .putInt(KEY_SEGUNDOS_RESTANTES, restantes)
                     .build();

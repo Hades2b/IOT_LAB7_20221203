@@ -34,15 +34,13 @@ public class LoginActivity extends AppCompatActivity {
 
         authService = AuthService.getInstance();
 
-        // Vincular vistas
         tilEmail = findViewById(R.id.tilEmail);
         tilPassword = findViewById(R.id.tilPassword);
         inputEmail = findViewById(R.id.inputEmail);
         inputPassword = findViewById(R.id.inputPassword);
         btnLogin = findViewById(R.id.btnLogin);
-        progressBar = findViewById(R.id.progressBar); // Asegúrate de tenerlo en el layout
+        progressBar = findViewById(R.id.progressBar);
 
-        // Redirigir a registro
         findViewById(R.id.btnOpenRegister).setOnClickListener(v ->
                 startActivity(new Intent(LoginActivity.this, RegisterActivity.class))
         );
@@ -61,14 +59,12 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void attemptLogin() {
-        // Limpiar errores previos
         tilEmail.setError(null);
         tilPassword.setError(null);
 
         String email = inputEmail.getText().toString().trim();
         String password = inputPassword.getText().toString().trim();
 
-        // Validación con errores en los campos
         boolean hasError = false;
         if (TextUtils.isEmpty(email)) {
             tilEmail.setError("El correo es obligatorio");
@@ -96,7 +92,6 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        // Mostrar estado de carga
         setLoadingState(true);
 
         authService.loginUser(email, password, new AuthService.AuthCallback() {

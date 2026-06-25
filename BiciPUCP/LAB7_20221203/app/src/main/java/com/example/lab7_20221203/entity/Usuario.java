@@ -5,10 +5,9 @@ public class Usuario {
     private String email;
     private String codigoPUCP;        // 8 dígitos
     private String pin;               // 4 dígitos
-    private String iotAuthToken;      // devuelto por el orquestador
-    private long timestampAprobacion; // en milisegundos (System.currentTimeMillis())
-    private String fotoUrl;           // URL pública de la foto de credencial
-
+    private String iotAuthToken;
+    private long timestampAprobacion;
+    private String fotoUrl;
     public Usuario() {}
 
     public Usuario(String uid, String email, String codigoPUCP, String pin, String iotAuthToken, long timestampAprobacion, String fotoUrl) {

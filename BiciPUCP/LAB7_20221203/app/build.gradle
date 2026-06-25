@@ -51,4 +51,9 @@ dependencies {
     implementation libs.converter.gson
     implementation libs.okhttp3
     implementation libs.glide
+
+    implementation libs.lifecycle.viewmodel
+    implementation libs.lifecycle.viewmodel.savedstate
+    implementation libs.work.runtime.ktx
+
 }

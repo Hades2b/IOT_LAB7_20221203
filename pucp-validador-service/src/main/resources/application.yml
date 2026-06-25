@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: pucp-validador-service
+
+server:
+  port: 8001
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    instance-id: ${spring.cloud.client.hostname}:${spring.application.name}:${random.int}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,env
+  endpoint:
+    env:
+      show-values: WHEN_AUTHORIZED
+      #ALWAYS
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    name: pucp-validador-service
+  java:
+    version: ${java.version}

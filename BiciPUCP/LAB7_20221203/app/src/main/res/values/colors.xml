@@ -2,4 +2,25 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="app_bg">#F3F4F6</color>
+
+    <!-- Colores base -->
+    <color name="blue_primary">#1565C0</color>   <!-- Azul fuerte -->
+    <color name="blue_secondary">#42A5F5</color> <!-- Azul claro -->
+    <color name="blue_disabled">#90CAF9</color>  <!-- Azul muy suave -->
+    <color name="grey_text">#424242</color>
+    <color name="grey_bg">#F5F5F5</color>
+    <color name="red_error">#D32F2F</color>
+
+    <!-- Cards y fondos -->
+    <color name="card_active_bg">#E3F2FD</color>   <!-- Azul muy claro -->
+    <color name="card_inactive_bg">#ECEFF1</color> <!-- Gris azulado -->
+
+    <color name="blue_dark">#003366</color>   <!-- Azul oscuro institucional -->
+    <color name="blue_medium">#1A5276</color> <!-- Azul intermedio -->
+    <color name="blue_light">#2E86C1</color>  <!-- Azul claro para detalles -->
+    <color name="gray_light">#F2F4F4</color>
+    <color name="gray_text">#5D6D7E</color>
+    <color name="accent">#F39C12</color>
 </resources>

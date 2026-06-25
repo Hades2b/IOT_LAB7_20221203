@@ -1,9 +1,237 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+
+    <!-- ========================================================== -->
+    <!--  TEMA BASE (sin ActionBar)                                 -->
+    <!-- ========================================================== -->
     <style name="Base.Theme.LAB7_20221203" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <!-- Colores globales -->
+        <item name="colorPrimary">@color/blue_dark</item>
+        <item name="colorPrimaryVariant">@color/blue_medium</item>
+        <item name="colorSecondary">@color/blue_light</item>
+        <item name="colorSecondaryVariant">@color/gray_light</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorOnSecondary">@color/blue_dark</item>
+        <item name="android:statusBarColor">@color/blue_dark</item>
+        <item name="android:windowLightStatusBar">false</item> <!-- Para que el texto de la barra de estado sea blanco -->
+
+        <!-- Tipografía por defecto -->
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="textAppearanceHeadline1">@style/TitleLarge</item>
+        <item name="textAppearanceHeadline2">@style/TitleMedium</item>
+        <item name="textAppearanceBody1">@style/BodyText</item>
     </style>
 
     <style name="Theme.LAB7_20221203" parent="Base.Theme.LAB7_20221203" />
+
+
+    <!-- ========================================================== -->
+    <!--  ESTILOS DE TEXTO (jerarquía visual)                       -->
+    <!-- ========================================================== -->
+    <style name="TitleLarge" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textColor">@color/blue_dark</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">30sp</item>
+        <item name="android:letterSpacing">0.02</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TitleMedium" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:textColor">@color/blue_medium</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="BodyText" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textColor">@color/gray_text</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:lineSpacingExtra">4dp</item>
+    </style>
+
+    <style name="BodyTextSmall" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:textColor">@color/gray_text</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="LinkText" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:textColor">@color/blue_light</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="LabelText" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:textColor">@color/blue_medium</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+
+    <!-- ========================================================== -->
+    <!--  ESTILOS DE BOTONES                                        -->
+    <!-- ========================================================== -->
+    <!-- Botón primario (fondo azul oscuro, texto blanco) -->
+    <style name="Widget.MyApp.Button.Primary" parent="Widget.Material3.Button">
+        <item name="android:backgroundTint">@color/blue_dark</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">14sp</item>
+        <item name="cornerRadius">28dp</item>
+    </style>
+
+    <!-- Botón secundario (fondo azul claro, texto azul oscuro) -->
+    <style name="Widget.MyApp.Button.Secondary" parent="Widget.Material3.Button">
+        <item name="android:backgroundTint">@color/blue_light</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">14sp</item>
+        <item name="cornerRadius">28dp</item>
+    </style>
+
+    <!-- Botón de contorno (borde azul, texto azul) -->
+    <style name="Widget.MyApp.Button.Outlined" parent="ThemeOverlay.Material3.Button">
+        <item name="android:textColor">@color/blue_dark</item>
+        <item name="android:strokeColor">@color/blue_light</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="cornerRadius">28dp</item>
+    </style>
+
+    <!-- Botón deshabilitado (gris) -->
+    <style name="Widget.MyApp.Button.Disabled" parent="Widget.Material3.Button">
+        <item name="android:backgroundTint">@color/gray_light</item>
+        <item name="android:textColor">@color/gray_text</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="cornerRadius">28dp</item>
+        <item name="android:clickable">false</item>
+        <item name="android:focusable">false</item>
+    </style>
+
+    <!-- Botón flotante (FAB) -->
+    <style name="Widget.MyApp.FloatingActionButton" parent="Widget.Material3.FloatingActionButton.Primary">
+        <item name="android:backgroundTint">@color/blue_dark</item>
+        <item name="android:tint">@color/white</item>
+    </style>
+
+
+    <!-- ========================================================== -->
+    <!--  ESTILOS DE CAMPOS DE TEXTO (TextInputLayout)             -->
+    <!-- ========================================================== -->
+    <!-- Contenedor de campo de texto con borde y etiqueta flotante -->
+    <style name="Widget.MyApp.TextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/blue_light</item>
+        <item name="boxStrokeErrorColor">@color/red_error</item>
+        <item name="hintTextColor">@color/blue_medium</item>
+        <item name="android:textColorHint">@color/gray_text</item>
+        <item name="android:textSize">14sp</item>
+        <!-- Icono de inicio (opcional) -->
+        <item name="startIconTint">@color/blue_light</item>
+        <item name="endIconTint">@color/blue_light</item>
+        <!-- Para que el hint flote sobre el borde -->
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">8dp</item>
+    </style>
+
+    <!-- Edición de texto dentro del TextInputLayout -->
+    <style name="Widget.MyApp.TextInputEditText" parent="Widget.Material3.TextInputEditText.OutlinedBox">
+        <item name="android:textColor">@color/blue_dark</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">0dp</item>
+    </style>
+
+
+    <!-- ========================================================== -->
+    <!--  ESTILOS DE TOOLBAR Y ACTION BAR                          -->
+    <!-- ========================================================== -->
+    <!-- Toolbar personalizado con menú de tres puntos -->
+    <style name="Widget.MyApp.Toolbar" parent="Widget.Material3.Toolbar">
+        <item name="android:background">@color/blue_dark</item>
+        <item name="android:titleTextColor">@color/white</item>
+        <item name="android:subtitleTextColor">@color/gray_light</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="titleTextAppearance">@style/TitleMedium</item>
+        <item name="android:minHeight">?actionBarSize</item>
+        <item name="android:elevation">4dp</item>
+        <!-- Ícono de navegación (flecha atrás) -->
+        <item name="navigationIconTint">@color/white</item>
+        <!-- Íconos del menú (tres puntos) -->
+        <item name="android:popupTheme">@style/Theme.Material3.Light</item>
+        <!-- Opcional: color del overflow (tres puntos) -->
+        <item name="android:colorControlNormal">@color/white</item>
+    </style>
+
+    <!-- Estilo para ActionBar (si usas soporte) -->
+    <style name="Widget.MyApp.ActionBar" parent="Widget.Material3.Toolbar">
+        <item name="android:background">@color/blue_dark</item>
+        <item name="android:titleTextColor">@color/white</item>
+        <item name="android:subtitleTextColor">@color/gray_light</item>
+        <item name="android:elevation">4dp</item>
+    </style>
+
+    <!-- Tema para el popup del menú (fondo blanco, texto oscuro) -->
+    <style name="Theme.MyApp.PopupMenu" parent="Theme.Material3.Light">
+        <item name="android:background">@color/white</item>
+        <item name="android:textColor">@color/blue_dark</item>
+        <item name="android:itemTextAppearance">@style/BodyText</item>
+    </style>
+
+
+    <!-- ========================================================== -->
+    <!--  ESTILOS DE TARJETAS (MaterialCardView)                   -->
+    <!-- ========================================================== -->
+    <style name="Widget.MyApp.CardView" parent="Widget.Material3.CardView.Filled">
+        <item name="cardBackgroundColor">@color/white</item>
+        <item name="cardElevation">4dp</item>
+        <item name="cardCornerRadius">16dp</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:layout_margin">8dp</item>
+    </style>
+
+    <style name="Widget.MyApp.CardView.Elevated" parent="Widget.MyApp.CardView">
+        <item name="cardElevation">8dp</item>
+    </style>
+
+
+    <!-- ========================================================== -->
+    <!--  ESTILOS DE TEXTVIEW COMUNES                              -->
+    <!-- ========================================================== -->
+    <style name="TextView.TitleLarge" parent="TitleLarge" />
+    <style name="TextView.TitleMedium" parent="TitleMedium" />
+    <style name="TextView.Body" parent="BodyText" />
+    <style name="TextView.BodySmall" parent="BodyTextSmall" />
+    <style name="TextView.Link" parent="LinkText" />
+    <style name="TextView.Label" parent="LabelText" />
+
+
+    <!-- ========================================================== -->
+    <!--  ESTILO DE PROGRESSBAR (para loading)                    -->
+    <!-- ========================================================== -->
+    <style name="Widget.MyApp.ProgressBar" parent="Widget.Material3.CircularProgressIndicator.Small">
+        <item name="android:indeterminateTint">@color/blue_dark</item>
+        <item name="android:indeterminateTintMode">src_in</item>
+        <item name="android:minWidth">48dp</item>
+        <item name="android:minHeight">48dp</item>
+    </style>
+
+
+    <!-- ========================================================== -->
+    <!--  ESTILO PARA SNACKBAR (si quieres personalizarlo)        -->
+    <!-- ========================================================== -->
+    <style name="Widget.MyApp.Snackbar" parent="Widget.Material3.Snackbar">
+        <item name="android:background">@color/blue_dark</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+
+    <!-- ========================================================== -->
+    <!--  ESTILO PARA LA PANTALLA DE CARNET (fondo y colores)     -->
+    <!-- ========================================================== -->
+    <style name="Theme.MyApp.Carnet" parent="Theme.LAB7_20221203">
+        <item name="android:windowBackground">@color/gray_light</item>
+        <item name="android:colorBackground">@color/gray_light</item>
+        <item name="android:textColorPrimary">@color/blue_dark</item>
+    </style>
+
 </resources>

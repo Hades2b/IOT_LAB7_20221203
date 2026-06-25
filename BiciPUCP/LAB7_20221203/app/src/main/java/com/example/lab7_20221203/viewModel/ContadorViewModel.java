@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkInfo;
@@ -21,6 +22,9 @@ public class ContadorViewModel extends AndroidViewModel {
     private final MutableLiveData<Boolean> expirado = new MutableLiveData<>(false);
     private UUID workerId;
     private boolean contadorActivo = false;
+
+    private LiveData<WorkInfo> contadorLiveData;
+    private Observer<WorkInfo> contadorObserver;
 
     public ContadorViewModel(@NonNull Application application) {
         super(application);
@@ -41,6 +45,7 @@ public class ContadorViewModel extends AndroidViewModel {
 
         contadorActivo = true;
         expirado.setValue(false);
+        segundosRestantes.setValue(segundos);
 
         Data inputData = new Data.Builder()
                 .putLong(ContadorWorker.KEY_INICIO, timestampAprobacion)
@@ -48,41 +53,59 @@ public class ContadorViewModel extends AndroidViewModel {
 
         OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(ContadorWorker.class)
                 .setInputData(inputData)
+                .addTag("contador_tag")
                 .build();
 
         workerId = workRequest.getId();
 
-        WorkManager.getInstance(getApplication())
-                .getWorkInfoByIdLiveData(workerId)
-                .observeForever(workInfo -> {
-                    if (workInfo == null) return;
-                    if (workInfo.getState() == WorkInfo.State.RUNNING) {
-                        Data progress = workInfo.getProgress();
-                        int seg = progress.getInt(ContadorWorker.KEY_SEGUNDOS_RESTANTES, 0);
-                        segundosRestantes.setValue(seg);
-                        if (seg == 0) {
-                            expirado.setValue(true);
-                            contadorActivo = false;
-                            WorkManager.getInstance(getApplication()).cancelWorkById(workerId);
-                        }
-                    } else if (workInfo.getState().isFinished()) {
+        contadorObserver = workInfo -> {
+            if (workInfo == null) return;
+            if (workInfo.getState() == WorkInfo.State.RUNNING) {
+                Data progress = workInfo.getProgress();
+                int seg = progress.getInt(ContadorWorker.KEY_SEGUNDOS_RESTANTES, -1);
+                if (seg != -1) {
+                    segundosRestantes.setValue(seg);
+                    if (seg <= 0) {
+                        expirado.setValue(true);
                         contadorActivo = false;
-                        if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
-                            expirado.setValue(true);
-                            segundosRestantes.setValue(0);
-                        }
+                        limpiarObserver(); // Ya no necesitamos el observer
                     }
-                });
+                }
+            } else if (workInfo.getState().isFinished()) {
+                contadorActivo = false;
+                if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                    expirado.setValue(true);
+                    segundosRestantes.setValue(0);
+                }
+                limpiarObserver(); // Limpiar al finalizar
+            }
+        };
+
+        contadorLiveData = WorkManager.getInstance(getApplication())
+                .getWorkInfoByIdLiveData(workerId);
+        contadorLiveData.observeForever(contadorObserver);
 
         WorkManager.getInstance(getApplication()).enqueue(workRequest);
     }
 
     public void reiniciarContador(long nuevoTimestamp) {
-        if (workerId != null) {
-            WorkManager.getInstance(getApplication()).cancelWorkById(workerId);
-        }
+        limpiarObserver();
+        WorkManager.getInstance(getApplication()).cancelAllWorkByTag("contador_tag");
         contadorActivo = false;
         iniciarContador(nuevoTimestamp);
+    }
+
+    private void limpiarObserver() {
+        if (contadorLiveData != null && contadorObserver != null) {
+            contadorLiveData.removeObserver(contadorObserver);
+            contadorLiveData = null;
+            contadorObserver = null;
+        }
+    }
+
+    public void setExpiradoManual(boolean value) {
+        expirado.setValue(value);
+        if (value) segundosRestantes.setValue(0);
     }
 
     public LiveData<Integer> getSegundosRestantes() {
@@ -96,8 +119,6 @@ public class ContadorViewModel extends AndroidViewModel {
     @Override
     protected void onCleared() {
         super.onCleared();
-        if (workerId != null) {
-            WorkManager.getInstance(getApplication()).cancelWorkById(workerId);
-        }
+        limpiarObserver();
     }
 }

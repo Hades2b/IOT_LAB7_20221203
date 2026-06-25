@@ -7,11 +7,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.lab7_20221203.auth.AuthService;
@@ -41,38 +37,31 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Toolbar
         setSupportActionBar(findViewById(R.id.toolbar));
 
-        // Inicializar servicios
         authService = AuthService.getInstance();
         firestoreRepository = new FirestoreRepository();
         biciService = new BiciService(this);
 
-        // Obtener UID del usuario actual
         FirebaseUser user = authService.getCurrentUser();
         if (user == null) {
-            // Si no hay usuario, volver a Login
+            startActivity(new Intent(this, LoginActivity.class));
             finish();
             return;
         }
         currentUid = user.getUid();
 
-        // Vincular vistas
         tvEstado = findViewById(R.id.tvEstado);
         tvContador = findViewById(R.id.tvContador);
         tvSubtitulo = findViewById(R.id.tvSubtitulo);
         btnNuevoDesbloqueo = findViewById(R.id.btnNuevoDesbloqueo);
         cardContador = findViewById(R.id.cardContador);
 
-        // ViewModel
         viewModel = new ViewModelProvider(this).get(ContadorViewModel.class);
 
-        // Observar cambios en segundos
         viewModel.getSegundosRestantes().observe(this, segundos -> {
             if (segundos != null) {
                 tvContador.setText(String.valueOf(segundos));
-                // Cambiar color de la card según el estado
                 if (segundos > 0) {
                     cardContador.setCardBackgroundColor(getColor(R.color.green_light));
                     tvContador.setTextColor(getColor(R.color.green_dark));
@@ -83,7 +72,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Observar estado expirado
         viewModel.getExpirado().observe(this, expirado -> {
             if (expirado != null) {
                 if (expirado) {
@@ -98,10 +86,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Cargar datos del usuario y iniciar contador
         cargarDatosUsuario();
 
-        // Botón para solicitar nuevo desbloqueo
         btnNuevoDesbloqueo.setOnClickListener(v -> solicitarNuevoDesbloqueo());
     }
 
@@ -110,12 +96,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Usuario usuario) {
                 if (usuario != null && usuario.getTimestampAprobacion() > 0) {
-                    // Iniciar contador con el timestamp guardado
                     viewModel.iniciarContador(usuario.getTimestampAprobacion());
                 } else {
-                    // Si no hay timestamp, mostrar expirado
-                    viewModel.getExpirado().setValue(true);
-                    tvContador.setText("0");
+                    viewModel.setExpiradoManual(true);
                 }
             }
 
@@ -128,33 +111,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void solicitarNuevoDesbloqueo() {
-        // Mostrar progreso (deshabilitar botón)
         btnNuevoDesbloqueo.setEnabled(false);
         btnNuevoDesbloqueo.setText("Validando...");
 
-        // Obtener código y pin del usuario desde Firestore (o desde memoria)
         firestoreRepository.obtenerUsuario(currentUid, new FirestoreRepository.FirestoreCallback<Usuario>() {
             @Override
             public void onSuccess(Usuario usuario) {
                 if (usuario != null) {
-                    String codigo = usuario.getCodigoPUCP();
-                    String pin = usuario.getPin();
-                    // Llamar al servicio
-                    biciService.solicitarDesbloqueo(codigo, pin)
+                    biciService.solicitarDesbloqueo(usuario.getCodigoPUCP(), usuario.getPin())
                             .observe(MainActivity.this, resultado -> {
                                 btnNuevoDesbloqueo.setEnabled(true);
                                 btnNuevoDesbloqueo.setText("SOLICITAR NUEVO DESBLOQUEO");
                                 if (resultado.isSuccess()) {
-                                    RespuestaDesbloqueo respuesta = resultado.respuesta;
-                                    // Actualizar timestamp en Firestore
-                                    long nuevoTimestamp = System.currentTimeMillis();
-                                    // Si el servidor devuelve timestamp, usarlo; si no, usar actual
-                                    firestoreRepository.actualizarTimestamp(currentUid, nuevoTimestamp,
+                                    RespuestaDesbloqueo res = resultado.respuesta;
+                                    long nuevoTs = authService.parseTimestamp(res.getTimestampAprobacion());
+                                    
+                                    firestoreRepository.actualizarTimestamp(currentUid, nuevoTs,
                                             new FirestoreRepository.FirestoreCallback<Void>() {
                                                 @Override
                                                 public void onSuccess(Void aVoid) {
-                                                    // Reiniciar contador
-                                                    viewModel.reiniciarContador(nuevoTimestamp);
+                                                    viewModel.reiniciarContador(nuevoTs);
                                                     Snackbar.make(findViewById(android.R.id.content),
                                                             "Desbloqueo renovado", Snackbar.LENGTH_SHORT).show();
                                                 }
@@ -162,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
                                                 @Override
                                                 public void onError(String error) {
                                                     Snackbar.make(findViewById(android.R.id.content),
-                                                            "Error al actualizar timestamp", Snackbar.LENGTH_LONG).show();
+                                                            "Error al actualizar Firestore", Snackbar.LENGTH_LONG).show();
                                                 }
                                             });
                                 } else {
@@ -170,11 +146,6 @@ public class MainActivity extends AppCompatActivity {
                                             "Error: " + resultado.error, Snackbar.LENGTH_LONG).show();
                                 }
                             });
-                } else {
-                    btnNuevoDesbloqueo.setEnabled(true);
-                    btnNuevoDesbloqueo.setText("SOLICITAR NUEVO DESBLOQUEO");
-                    Snackbar.make(findViewById(android.R.id.content),
-                            "No se encontraron datos del usuario", Snackbar.LENGTH_LONG).show();
                 }
             }
 
@@ -182,13 +153,10 @@ public class MainActivity extends AppCompatActivity {
             public void onError(String error) {
                 btnNuevoDesbloqueo.setEnabled(true);
                 btnNuevoDesbloqueo.setText("SOLICITAR NUEVO DESBLOQUEO");
-                Snackbar.make(findViewById(android.R.id.content),
-                        "Error al obtener datos: " + error, Snackbar.LENGTH_LONG).show();
             }
         });
     }
 
-    // Menú
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -197,16 +165,16 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_carnet) {
-            Intent intent = new Intent(this, PerfilActivity.class);
-            startActivity(intent);
+        int id = item.getItemId();
+        if (id == R.id.action_carnet) {
+            startActivity(new Intent(this, PerfilActivity.class));
             return true;
-        } else if (item.getItemId() == R.id.action_logout) {
+        } else if (id == R.id.action_logout) {
             authService.logout();
+            startActivity(new Intent(this, LoginActivity.class));
             finish();
             return true;
         }
         return super.onOptionsItemSelected(item);
-
     }
 }

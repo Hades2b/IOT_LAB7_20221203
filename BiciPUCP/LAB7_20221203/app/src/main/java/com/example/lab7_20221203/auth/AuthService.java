@@ -118,7 +118,7 @@ public class AuthService {
 
     // ==================== UTILIDADES ====================
 
-    private long parseTimestamp(String iso) {
+    public long parseTimestamp(String iso) {
         if (iso == null) return System.currentTimeMillis();
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());

@@ -9,7 +9,7 @@ import androidx.work.WorkerParameters;
 public class ContadorWorker extends Worker {
 
     public static final String KEY_SEGUNDOS_RESTANTES = "segundos_restantes";
-    public static final String KEY_INICIO = "inicio"; // timestamp de inicio
+    public static final String KEY_INICIO = "inicio"; // timestamp de inicio (milis)
 
     public ContadorWorker(@NonNull Context context, @NonNull WorkerParameters params) {
         super(context, params);
@@ -19,18 +19,22 @@ public class ContadorWorker extends Worker {
     @Override
     public Result doWork() {
         long inicio = getInputData().getLong(KEY_INICIO, System.currentTimeMillis());
-        int segundosTotales = 120; // o tomarlo del input
+        long fin = inicio + 120_000; // 120 segundos de duración
 
-        for (int i = segundosTotales; i >= 0; i--) {
-            // Enviar progreso
+        while (true) {
+            long ahora = System.currentTimeMillis();
+            int restantes = (int) ((fin - ahora) / 1000);
+
+            if (restantes < 0) restantes = 0;
+
+            // Enviar progreso al ViewModel
             Data progress = new Data.Builder()
-                    .putInt(KEY_SEGUNDOS_RESTANTES, i)
+                    .putInt(KEY_SEGUNDOS_RESTANTES, restantes)
                     .build();
             setProgressAsync(progress);
 
-            // Si se cancela el worker, salir
-            if (isStopped()) {
-                return Result.failure();
+            if (restantes <= 0 || isStopped()) {
+                break;
             }
 
             try {
@@ -43,4 +47,3 @@ public class ContadorWorker extends Worker {
         return Result.success();
     }
 }
-

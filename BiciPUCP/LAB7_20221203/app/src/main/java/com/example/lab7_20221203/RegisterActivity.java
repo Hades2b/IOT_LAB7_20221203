@@ -7,16 +7,8 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.Observer;
-import androidx.work.Data;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkInfo;
-import androidx.work.WorkManager;
 
 import com.example.lab7_20221203.auth.AuthService;
 import com.example.lab7_20221203.dto.RespuestaDesbloqueo;
@@ -77,7 +69,7 @@ public class RegisterActivity extends AppCompatActivity {
         String codigo = inputCodigo.getText().toString().trim();
         String pin = inputPin.getText().toString().trim();
 
-        // Validaciones (mismo código que antes)
+        // Validaciones
         boolean hasError = false;
         if (TextUtils.isEmpty(email)) {
             tilEmail.setError("El correo es obligatorio");
@@ -117,10 +109,10 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        // --- Iniciar proceso con BiciService (versión LiveData) ---
+        // --- Iniciar proceso con BiciService ---
         setLoadingState(true);
 
-        biciService.solicitarDesbloqueoLive(codigo, pin)
+        biciService.solicitarDesbloqueo(codigo, pin)
                 .observe(this, new Observer<BiciService.ResultadoDesbloqueo>() {
                     @Override
                     public void onChanged(BiciService.ResultadoDesbloqueo resultado) {

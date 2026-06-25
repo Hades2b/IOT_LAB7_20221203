@@ -1,6 +1,7 @@
 package com.example.lab7_20221203.workers;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.work.Data;
@@ -67,6 +68,7 @@ public class SolDesbloqueoWorker extends Worker {
                 return Result.failure(output);
             }
         } catch (Exception e) {
+            Log.e("SolDesbloqueoWorker", "Error de conexion en solicitud: " + e.getMessage());
             Data output = new Data.Builder()
                     .putString(KEY_ERROR, "Error de conexión: " + e.getMessage())
                     .build();
@@ -82,6 +84,7 @@ public class SolDesbloqueoWorker extends Worker {
                 if (obj.has("mensaje")) {
                     return obj.getString("mensaje");
                 }
+                Log.e("SolDesbloqueoWorker", "Error en response:"+response.code()+" "+response.message());
                 return "Error " + response.code() + ": " + response.message();
             }
         } catch (Exception e) {

@@ -11,3 +11,6 @@ El proyecto orquestador pucp-validador-service cumple esta restricion del estand
 
     - No utiliza sesión, cookies ni identificadores para procesar y ejecutar la petición.
     - Los endpoint únicamente reciben variables como @PathVariable en la Url, y el resultado depende solo de estas variables.
+
+### Link Video
+https://drive.google.com/file/d/1QrzlrsQrd0rHuxQ-7cxM5eTwL7TOKk34/view?usp=sharing

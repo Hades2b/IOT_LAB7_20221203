@@ -45,7 +45,7 @@ public class DesbloquearController {
             if (Boolean.FALSE.equals(codigoValido)) {
                 errorResponse.put("mensaje", "Código PUCP inválido.");
             } else if (Boolean.FALSE.equals(candadoValido)) {
-                errorResponse.put("mensaje", "PIN de tu candado incorrecto.");
+                errorResponse.put("mensaje", "PIN de candado mal formado.");
             }
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);

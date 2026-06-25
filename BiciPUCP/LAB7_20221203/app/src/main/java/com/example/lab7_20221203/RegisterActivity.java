@@ -41,7 +41,7 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        authService = new AuthService();
+        authService = AuthService.getInstance();
         biciService = new BiciService(this);
 
         // Vincular vistas

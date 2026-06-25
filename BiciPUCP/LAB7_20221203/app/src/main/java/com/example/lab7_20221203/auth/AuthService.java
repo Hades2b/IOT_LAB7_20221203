@@ -16,12 +16,21 @@ import java.util.Locale;
 public class AuthService {
 
     private static final String TAG = "AuthService";
+    private static AuthService instance;
     private final FirebaseAuth auth;
     private final FirestoreRepository firestoreRepository;
 
-    public AuthService() {
-        this.auth = FirebaseAuth.getInstance();
-        this.firestoreRepository = new FirestoreRepository();
+    private AuthService() {
+        auth = FirebaseAuth.getInstance();
+        auth.setLanguageCode("es");
+        firestoreRepository = new FirestoreRepository();
+    }
+
+    public static synchronized AuthService getInstance() {
+        if (instance == null) {
+            instance = new AuthService();
+        }
+        return instance;
     }
 
     // ==================== SESIÓN ====================
@@ -54,7 +63,6 @@ public class AuthService {
                 });
     }
 
-    // ==================== CREAR USUARIO (después de validación) ====================
     public void createUserAfterValidation(String email, String password,
                                           String codigo, String pin,
                                           RespuestaDesbloqueo respuesta,
@@ -77,7 +85,6 @@ public class AuthService {
                 });
     }
 
-    // Método privado para guardar el perfil en Firestore
     private void guardarPerfilEnFirestore(FirebaseUser firebaseUser,
                                           String email,
                                           String codigo,
@@ -103,13 +110,8 @@ public class AuthService {
 
             @Override
             public void onError(String error) {
-                // Firestore falló, pero el usuario ya está en Auth.
-                // Podemos considerar éxito parcial o reportar error según tu criterio.
                 Log.e(TAG, "Error guardando perfil en Firestore: " + error);
-                // Decisión: consideramos éxito porque el usuario ya puede loguearse.
-                // Si prefieres fallar, descomenta la siguiente línea:
-                // callback.onError("Error guardando perfil: " + error);
-                callback.onSuccess(firebaseUser);
+                callback.onError("Error guardando perfil: " + error);
             }
         });
     }

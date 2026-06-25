@@ -85,6 +85,14 @@
                         android:textColor="@color/blue_dark" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="16dp"
+                    android:visibility="gone" />
+
                 <!-- Botón Iniciar sesión -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnLogin"

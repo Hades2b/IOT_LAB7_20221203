@@ -7,6 +7,9 @@ public class RespuestaDesbloqueo {
     private int desbloqueoExpiraEn;
     private String timestampAprobacion;
 
+    public RespuestaDesbloqueo() {
+    }
+
     public RespuestaDesbloqueo(String status, String iotAuthToken, int desbloqueoExpiraEn, String timestampAprobacion) {
         this.status = status;
         this.iotAuthToken = iotAuthToken;
@@ -41,6 +44,4 @@ public class RespuestaDesbloqueo {
     public void setTimestampAprobacion(String timestampAprobacion) {
         this.timestampAprobacion = timestampAprobacion;
     }
-
-
 }

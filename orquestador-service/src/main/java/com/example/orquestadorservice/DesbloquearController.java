@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -37,7 +39,9 @@ public class DesbloquearController {
 
         if (Boolean.TRUE.equals(candadoValido) && Boolean.TRUE.equals(codigoValido)) {
             String token = "PUCP-BIKE-" + UUID.randomUUID().toString();
-            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            String timestamp = LocalDateTime.now()
+                    .truncatedTo(ChronoUnit.SECONDS)
+                    .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
             RespuestaDesbloqueo respuesta = new RespuestaDesbloqueo("APROBADO", token, 120, timestamp);
             return ResponseEntity.ok(respuesta);
         } else {

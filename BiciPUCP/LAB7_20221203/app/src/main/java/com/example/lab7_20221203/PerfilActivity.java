@@ -32,7 +32,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class PerfilActivity extends AppCompatActivity {
 
     private ImageView ivFoto;
-    private TextView tvNombre, tvCodigo, tvEmail;
+    private TextView tvNombre, tvCodigo, tvEmail, tvUrl;
     private MaterialButton btnSubirFoto;
     private ProgressBar progressBar;
 
@@ -58,12 +58,10 @@ public class PerfilActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_perfil);
 
-        // Inicializar servicios
         authService = AuthService.getInstance();
         firestoreRepository = new FirestoreRepository();
         storageRepository = new StorageRepository();
 
-        // Verificar sesión
         FirebaseUser user = authService.getCurrentUser();
         if (user == null) {
             Toast.makeText(this, "Usuario no autenticado", Toast.LENGTH_SHORT).show();
@@ -77,6 +75,7 @@ public class PerfilActivity extends AppCompatActivity {
         tvNombre = findViewById(R.id.tvNombre);
         tvCodigo = findViewById(R.id.tvCodigo);
         tvEmail = findViewById(R.id.tvEmail);
+        tvUrl = findViewById(R.id.tvUrl);
         btnSubirFoto = findViewById(R.id.btnSubirFoto);
         progressBar = findViewById(R.id.progressBar);
 
@@ -103,8 +102,9 @@ public class PerfilActivity extends AppCompatActivity {
                     tvNombre.setText(usuario.getCodigoPUCP());
                     tvCodigo.setText("Código: " + usuario.getCodigoPUCP());
                     tvEmail.setText(usuario.getEmail());
+                    String url = usuario.getFotoUrl()==null ? "..." : usuario.getFotoUrl();
+                    tvUrl.setText("URL en Firebase Storage: "+url);
 
-                    // Cargar foto si existe URL
                     if (usuario.getFotoUrl() != null && !usuario.getFotoUrl().isEmpty()) {
                         Glide.with(PerfilActivity.this)
                                 .load(usuario.getFotoUrl())
@@ -131,13 +131,8 @@ public class PerfilActivity extends AppCompatActivity {
     }
 
     private void subirFoto(Uri uri) {
-        // Mostrar ProgressBar y deshabilitar botón
         progressBar.setVisibility(View.VISIBLE);
         btnSubirFoto.setEnabled(false);
-
-        // Comprimir la imagen (opcional, aquí usamos la URI directamente)
-        // Si quieres comprimir, puedes hacerlo con BitmapFactory y luego guardar en archivo temporal.
-        // Por simplicidad, subimos la imagen directamente.
 
         storageRepository.subirImagenCredencial(currentUid, uri, new StorageRepository.StorageCallback() {
             @Override
@@ -179,7 +174,6 @@ public class PerfilActivity extends AppCompatActivity {
         });
     }
 
-    // Manejar el botón de retroceso en la toolbar
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();

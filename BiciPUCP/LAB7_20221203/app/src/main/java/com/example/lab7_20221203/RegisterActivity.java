@@ -3,6 +3,7 @@ package com.example.lab7_20221203;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -36,7 +37,6 @@ public class RegisterActivity extends AppCompatActivity {
         authService = AuthService.getInstance();
         biciService = new BiciService(this);
 
-        // Vincular vistas
         tilEmail = findViewById(R.id.tilEmail);
         tilPassword = findViewById(R.id.tilPassword);
         tilCodigo = findViewById(R.id.tilCodigo);
@@ -48,17 +48,14 @@ public class RegisterActivity extends AppCompatActivity {
         btnRegister = findViewById(R.id.btnRegister);
         progressBar = findViewById(R.id.progressBar);
 
-        // Redirigir a Login
         findViewById(R.id.btnOpenLogin).setOnClickListener(v ->
                 startActivity(new Intent(RegisterActivity.this, LoginActivity.class))
         );
 
-        // Click en registrar
         btnRegister.setOnClickListener(v -> attemptRegister());
     }
 
     private void attemptRegister() {
-        // Limpiar errores previos
         tilEmail.setError(null);
         tilPassword.setError(null);
         tilCodigo.setError(null);
@@ -69,7 +66,6 @@ public class RegisterActivity extends AppCompatActivity {
         String codigo = inputCodigo.getText().toString().trim();
         String pin = inputPin.getText().toString().trim();
 
-        // Validaciones
         boolean hasError = false;
         if (TextUtils.isEmpty(email)) {
             tilEmail.setError("El correo es obligatorio");
@@ -101,7 +97,6 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         if (hasError) {
-            // Enfocar primer error
             if (tilEmail.getError() != null) inputEmail.requestFocus();
             else if (tilPassword.getError() != null) inputPassword.requestFocus();
             else if (tilCodigo.getError() != null) inputCodigo.requestFocus();
@@ -109,7 +104,6 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        // --- Iniciar proceso con BiciService ---
         setLoadingState(true);
 
         biciService.solicitarDesbloqueo(codigo, pin)
@@ -126,7 +120,8 @@ public class RegisterActivity extends AppCompatActivity {
                                     new AuthService.AuthCallback() {
                                         @Override
                                         public void onSuccess(FirebaseUser user) {
-                                            navigateToMain();
+                                            long ahora = System.currentTimeMillis();
+                                            navigateToMain(ahora);
                                         }
 
                                         @Override
@@ -136,7 +131,6 @@ public class RegisterActivity extends AppCompatActivity {
                                     }
                             );
                         } else {
-                            // Error del microservicio
                             Toast.makeText(RegisterActivity.this, resultado.error, Toast.LENGTH_LONG).show();
                         }
                     }
@@ -155,8 +149,10 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
-    private void navigateToMain() {
-        startActivity(new Intent(RegisterActivity.this, MainActivity.class));
+    private void navigateToMain(long timestampAprobacion) {
+        Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+        intent.putExtra(MainActivity.EXTRA_TIMESTAMP_APROBACION, timestampAprobacion);
+        startActivity(intent);
         finish();
     }
 }

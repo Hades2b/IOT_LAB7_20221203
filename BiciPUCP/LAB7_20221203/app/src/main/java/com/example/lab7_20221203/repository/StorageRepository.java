@@ -14,7 +14,6 @@ public class StorageRepository {
 
     public void subirImagenCredencial(String uid, Uri imagenUri, StorageCallback callback) {
         StorageReference fileRef = storageRef.child("credenciales_bicipucp/" + uid + ".jpg");
-        // Se recomienda comprimir la imagen antes de subir (se hará en la vista)
         fileRef.putFile(imagenUri)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {

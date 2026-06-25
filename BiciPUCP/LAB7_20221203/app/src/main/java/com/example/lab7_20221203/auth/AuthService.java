@@ -8,11 +8,6 @@ import com.example.lab7_20221203.repository.FirestoreRepository;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 public class AuthService {
 
     private static final String TAG = "AuthService";
@@ -98,8 +93,7 @@ public class AuthService {
         usuario.setPin(pin);
         usuario.setIotAuthToken(respuesta.getIotAuthToken());
 
-        // Convertir timestamp ISO a long
-        long timestampMillis = parseTimestamp(respuesta.getTimestampAprobacion());
+        long timestampMillis = System.currentTimeMillis();
         usuario.setTimestampAprobacion(timestampMillis);
 
         firestoreRepository.guardarUsuario(usuario, new FirestoreRepository.FirestoreCallback<Void>() {
@@ -114,20 +108,6 @@ public class AuthService {
                 callback.onError("Error guardando perfil: " + error);
             }
         });
-    }
-
-    // ==================== UTILIDADES ====================
-
-    public long parseTimestamp(String iso) {
-        if (iso == null) return System.currentTimeMillis();
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
-            Date date = sdf.parse(iso);
-            return date != null ? date.getTime() : System.currentTimeMillis();
-        } catch (ParseException e) {
-            Log.w(TAG, "Error parseando timestamp: " + iso);
-            return System.currentTimeMillis();
-        }
     }
 
     // ==================== CALLBACKS ====================

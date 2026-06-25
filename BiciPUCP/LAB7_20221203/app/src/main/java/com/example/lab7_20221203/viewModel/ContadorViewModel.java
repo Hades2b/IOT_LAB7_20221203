@@ -1,6 +1,7 @@
 package com.example.lab7_20221203.viewModel;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -77,7 +78,7 @@ public class ContadorViewModel extends AndroidViewModel {
                     expirado.setValue(true);
                     segundosRestantes.setValue(0);
                 }
-                limpiarObserver(); // Limpiar al finalizar
+                limpiarObserver();
             }
         };
 

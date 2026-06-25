@@ -2,6 +2,7 @@ package com.example.lab7_20221203;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,6 +23,9 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
+
+    /** Extra para recibir el timestamp directamente desde RegisterActivity (evita race condition con Firestore) */
+    public static final String EXTRA_TIMESTAMP_APROBACION = "extra_timestamp_aprobacion";
 
     private TextView tvEstado, tvContador, tvSubtitulo;
     private MaterialButton btnNuevoDesbloqueo;
@@ -92,6 +96,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void cargarDatosUsuario() {
+        long tsIntent = getIntent().getLongExtra(EXTRA_TIMESTAMP_APROBACION, -1L);
+        Log.d("MainActivity", "Recibido timestamp de registro: " + tsIntent);
+        if (tsIntent > 0) {
+            viewModel.iniciarContador(tsIntent);
+            return;
+        }
+
         firestoreRepository.obtenerUsuario(currentUid, new FirestoreRepository.FirestoreCallback<Usuario>() {
             @Override
             public void onSuccess(Usuario usuario) {
@@ -123,9 +134,8 @@ public class MainActivity extends AppCompatActivity {
                                 btnNuevoDesbloqueo.setEnabled(true);
                                 btnNuevoDesbloqueo.setText("SOLICITAR NUEVO DESBLOQUEO");
                                 if (resultado.isSuccess()) {
-                                    RespuestaDesbloqueo res = resultado.respuesta;
-                                    long nuevoTs = authService.parseTimestamp(res.getTimestampAprobacion());
-                                    
+                                    final long nuevoTs = System.currentTimeMillis();
+
                                     firestoreRepository.actualizarTimestamp(currentUid, nuevoTs,
                                             new FirestoreRepository.FirestoreCallback<Void>() {
                                                 @Override
